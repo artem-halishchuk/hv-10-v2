@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ul.classList.add('content-list');
             container.append(ul);
             this.show(this.users, ul);
+
         }
         createUser(name, arr) {
             let id = null;
@@ -75,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 buttonShow.classList.add('content-item-name');
                 buttonShow.innerHTML = e.name;
                 li.append(buttonShow);
-                li.addEventListener('click', () => {
-                    this.activeElem(event.target);
+                li.addEventListener('click', (event) => {
+                    this.activeElem(event.target, ul);
                 })
 
                 let buttonDelete = document.createElement('button');
@@ -88,9 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 //return li;
             })
         }
-        activeElem(event) {
+        activeElem(event, ul) {
             let index = event.parentNode.dataset.index;
             this.activeElement = this.users[index];
+            ul.childNodes.forEach(e => {
+                e.firstChild.classList.remove('content-item-name-active');
+            });
+            event.classList.add('content-item-name-active');
             console.log(this.activeElement);
         }
 	}

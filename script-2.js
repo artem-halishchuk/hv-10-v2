@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	let petia = new User('petia', 1);
 	users.push(vasia);
 	users.push(petia);
-	console.log(users);
 	//test users end
 
     class Note {
@@ -22,12 +21,18 @@ document.addEventListener('DOMContentLoaded', function() {
             this.note = note;
         }
     }
+    let note = new Note('note-1', 'text note-1');
+    let note2 = new Note('note-2', 'text note-2');
+    vasia.notes.push(note);
+    petia.notes.push(note2);
 
 	class MenuMain {
-		constructor(blockInsert, arrElem) {
+		constructor(blockInsert, arrElem, removeBlock) {
             this.blockInsert = blockInsert;
             this.arrElem = arrElem;
             this.activeElement = null;
+            this.ul = null;
+            this.removeBlock = removeBlock;
         };
         createMenu() {
         	let container = document.createElement('div');
@@ -47,34 +52,37 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonAdd.innerHTML = 'add';
             formWrapper.append(buttonAdd);
             buttonAdd.addEventListener('click', () => {
-                this.createElem(input.value, this.arrElem);
+                this.name = input.value;
+                this.createElem();
                 input.value = '';
-                this.show(this.arrElem, ul); //отображение созданого элемента
+                this.show(this.arrElem); //отображение созданого элемента
             });
 
-            let ul = document.createElement('ul');
-            ul.classList.add('content-list');
-            container.append(ul);
-            this.show(this.arrElem, ul);
+            this.ul = document.createElement('ul');
+            this.ul.classList.add('content-list');
+            container.append(this.ul);
+            this.show();
         }
         //создание элемента
-        createElem(name, arr) {
-            arr.push(new User(name, arr.length));
+        createElem() {
+            this.arrElem.push(new User(this.name, this.arrElem.length));
         }
-        show(arr, ul) {
-            ul.innerHTML = '';
-            arr.map((e, i) => {
+        show() {
+            this.ul.innerHTML = '';
+            if (!this.arrElem) return;
+            this.arrElem.map((e, i) => {
                 let li = document.createElement('li');
                 li.classList.add('content-item');
-                ul.append(li);
+                this.ul.append(li);
 
                 let buttonShow = document.createElement('button');
                 buttonShow.classList.add('content-item-name');
                 buttonShow.innerHTML = e.name;
                 li.append(buttonShow);
                 li.addEventListener('click', (event) => {
-                    this.activeElem(event.target, ul);
+                    this.activeElem(event.target, this.ul);
                     if (e === this.activeElement) buttonShow.classList.add('content-item-name-active');
+                    //this.display();
                 })
                 if (e === this.activeElement) buttonShow.classList.add('content-item-name-active');
 
@@ -83,33 +91,100 @@ document.addEventListener('DOMContentLoaded', function() {
                 li.append(buttonDelete);
                 buttonDelete.addEventListener('click', (event) => {
                     this.deleteElem(event);
-                    this.show(arr, ul);
+                    this.show(this.arrElem);
+                    //console.log(this.activeElement.notes);
                     console.log(this.activeElement);
+                    this.display();
                 })
                 li.dataset.index = i;
             })
         }
-        activeElem(event, ul) {
+        activeElem(event) {
             if(!event) return;
             let index = event.parentNode.dataset.index;
             this.activeElement = this.arrElem[index];
 
-            ul.childNodes.forEach(e => {
+            this.ul.childNodes.forEach(e => {
                 e.firstChild.classList.remove('content-item-name-active');
                 if(e.dataset.index === index) e.firstChild.classList.add('content-item-name-active');
             });
+            this.display();
         }
         deleteElem(event) {
             event.stopPropagation();
-            console.log(event.target.parentNode.dataset.index);
+            let index = event.target.parentNode.dataset.index;
+            if (this.arrElem[index] === this.activeElement) this.activeElement = null;
             this.arrElem.splice(event.target.parentNode.dataset.index, 1);
+        }
+
+        display() {
+            if ((!this.activeElement) && document.querySelector(this.removeBlock)) {
+                document.querySelector('.menu-notes').remove();
+            }
+            let menuNotes;
+            if (this.activeElement) {
+                if (document.querySelector(this.removeBlock)) {
+                    document.querySelector(this.removeBlock).remove();
+                }
+                menuNotes = new MenuNotes(getBlockApp, this.activeElement.notes);
+                menuNotes.createMenu();
+            }
+
         }
 	}
 
+
+
 	let getBlockApp = document.querySelector('.app');
 	
-	let menuMain = new MenuMain(getBlockApp, users);
+	let menuMain = new MenuMain(getBlockApp, users, '.menu-notes');
 	menuMain.createMenu();
-    //let menuNotes = new NotesMenu(getBlockApp, users.notes);
-    //menuNotes.createMenu();
+
+
+
+    class MenuNotes extends MenuMain {
+        constructor(blockInsert, arrElem) {
+            super(blockInsert, arrElem);
+        }
+        createMenu() {
+            let container = document.createElement('div');
+            container.classList.add('menu-notes');
+            this.blockInsert.append(container);
+
+            let formWrapper = document.createElement('div');
+            formWrapper.classList.add('form');
+            container.append(formWrapper);
+
+            let input = document.createElement('input');
+            input.classList.add('input', 'form-name');
+            formWrapper.append(input);
+
+            let buttonAdd = document.createElement('button');
+            buttonAdd.classList.add('button', 'form-add');
+            buttonAdd.innerHTML = 'add';
+            formWrapper.append(buttonAdd);
+            buttonAdd.addEventListener('click', () => {
+                this.name = input.value;
+                this.createElem();
+                input.value = '';
+                this.show(this.arrElem); //отображение созданого элемента
+            });
+
+            this.ul = document.createElement('ul');
+            this.ul.classList.add('content-list');
+            container.append(this.ul);
+            this.show();
+        }
+        createElem() {
+            this.arrElem.push(new Note(this.name));
+        }
+        display() {
+            if (this.blockInsert.childNodes[2]) this.blockInsert.childNodes[2].remove();
+        }
+    }
+
+
+
+
+
 })

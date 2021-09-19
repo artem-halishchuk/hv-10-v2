@@ -21,10 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
             this.note = note;
         }
     }
+
+    //test notes start
     let note = new Note('note-1', 'text note-1');
     let note2 = new Note('note-2', 'text note-2');
     vasia.notes.push(note);
     petia.notes.push(note2);
+    //test notes end
 
 	class MenuMain {
 		constructor(blockInsert, arrElem, removeBlock) {
@@ -38,15 +41,15 @@ document.addEventListener('DOMContentLoaded', function() {
         	let container = document.createElement('div');
             container.classList.add('menu-main');
             this.blockInsert.append(container);
-            
+
             let formWrapper = document.createElement('div');
             formWrapper.classList.add('form');
             container.append(formWrapper);
-            
+
             let input = document.createElement('input');
             input.classList.add('input', 'form-name');
             formWrapper.append(input);
-        
+
             let buttonAdd = document.createElement('button');
             buttonAdd.classList.add('button', 'form-add');
             buttonAdd.innerHTML = 'add';
@@ -119,21 +122,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         display() {
             if ((!this.activeElement) && document.querySelector(this.removeBlock)) {
-                document.querySelector('.menu-notes').remove();
+                document.querySelector(this.removeBlock).remove();
             }
             let menuNotes;
             if (this.activeElement) {
                 if (document.querySelector(this.removeBlock)) {
                     document.querySelector(this.removeBlock).remove();
                 }
-                menuNotes = new MenuNotes(getBlockApp, this.activeElement.notes);
+                menuNotes = new MenuNotes(getBlockApp, this.activeElement.notes, '.menu-note');
                 menuNotes.createMenu();
             }
 
         }
 	}
-
-
 
 	let getBlockApp = document.querySelector('.app');
 	
@@ -142,9 +143,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
+
     class MenuNotes extends MenuMain {
-        constructor(blockInsert, arrElem) {
-            super(blockInsert, arrElem);
+        constructor(blockInsert, arrElem, removeBlock) {
+            super(blockInsert, arrElem, removeBlock);
         }
         createMenu() {
             let container = document.createElement('div');
@@ -178,10 +182,53 @@ document.addEventListener('DOMContentLoaded', function() {
         createElem() {
             this.arrElem.push(new Note(this.name));
         }
+
         display() {
-            if (this.blockInsert.childNodes[2]) this.blockInsert.childNodes[2].remove();
+            if ((!this.activeElement) && document.querySelector(this.removeBlock)) {
+                document.querySelector(this.removeBlock).remove();
+            }
+            let menuNote;
+            if (this.activeElement) {
+                if (document.querySelector(this.removeBlock)) {
+                    document.querySelector(this.removeBlock).remove();
+                }
+                menuNote = new MenuNote(getBlockApp, this.activeElement.name, this.activeElement.note);
+                menuNote.createMenu();
+            }
         }
     }
+
+    class MenuNote {
+        constructor(blockInsert, name, note) {
+            this.blockInsert = blockInsert;
+            this.name = name;
+            this.note = note;
+        }
+        createMenu() {
+            let container = document.createElement('div');
+            container.classList.add('menu-note');
+            this.blockInsert.append(container);
+
+            let input = document.createElement('input');
+            input.classList.add('input', 'note-name');
+            container.append(input);
+            input.value = this.name;
+            input.oninput = () => {
+                this.name = input.value;
+                console.log(note.name);
+            }
+
+            let textarea = document.createElement('textarea');
+            textarea.classList.add('input', 'note-form');
+            container.append(textarea);
+            textarea.value = this.note;
+            textarea.oninput = () => {
+                this.note = textarea.value;
+                console.log(note.note);
+            }
+        }
+    }
+
 
 
 

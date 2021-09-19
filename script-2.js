@@ -2,9 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	let users = []; //массив юзеров
 
     class User {
-        constructor(name, id) {
+        constructor(name) {
             this.name = name;
-            this.id = id;
             this.notes = [];
         }
     }
@@ -25,9 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 	class MenuMain {
-		constructor(blockInsert, users) {
+		constructor(blockInsert, arrElem) {
             this.blockInsert = blockInsert;
-            this.users = users;
+            this.arrElem = arrElem;
             this.activeElement = null;
         };
         createMenu() {
@@ -48,26 +47,23 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonAdd.innerHTML = 'add';
             formWrapper.append(buttonAdd);
             buttonAdd.addEventListener('click', () => {
-                this.createUser(input.value, this.users);
+                this.createElem(input.value, this.arrElem);
                 input.value = '';
-                this.show(this.users, ul);
+                this.show(this.arrElem, ul); //отображение созданого элемента
             });
 
             let ul = document.createElement('ul');
             ul.classList.add('content-list');
             container.append(ul);
-            this.show(this.users, ul);
-
+            this.show(this.arrElem, ul);
         }
-        createUser(name, arr) {
-            let id = null;
-            if (!arr.length) id = 0;
-            else id = arr[arr.length-1].id + 1;
+        //создание элемента
+        createElem(name, arr) {
             arr.push(new User(name, arr.length));
         }
         show(arr, ul) {
             ul.innerHTML = '';
-            arr.map((e) => {
+            arr.map((e, i) => {
                 let li = document.createElement('li');
                 li.classList.add('content-item');
                 ul.append(li);
@@ -78,29 +74,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 li.append(buttonShow);
                 li.addEventListener('click', (event) => {
                     this.activeElem(event.target, ul);
+                    if (e === this.activeElement) buttonShow.classList.add('content-item-name-active');
                 })
+                if (e === this.activeElement) buttonShow.classList.add('content-item-name-active');
 
                 let buttonDelete = document.createElement('button');
                 buttonDelete.classList.add('delete');
                 li.append(buttonDelete);
-
-                li.dataset.index = e.id;
-                //li.dataset.index = this.index;
-                //return li;
+                buttonDelete.addEventListener('click', (event) => {
+                    this.deleteElem(event);
+                    this.show(arr, ul);
+                    console.log(this.activeElement);
+                })
+                li.dataset.index = i;
             })
         }
         activeElem(event, ul) {
+            if(!event) return;
             let index = event.parentNode.dataset.index;
-            this.activeElement = this.users[index];
+            this.activeElement = this.arrElem[index];
+
             ul.childNodes.forEach(e => {
                 e.firstChild.classList.remove('content-item-name-active');
+                if(e.dataset.index === index) e.firstChild.classList.add('content-item-name-active');
             });
-            event.classList.add('content-item-name-active');
-            console.log(this.activeElement);
+        }
+        deleteElem(event) {
+            event.stopPropagation();
+            console.log(event.target.parentNode.dataset.index);
+            this.arrElem.splice(event.target.parentNode.dataset.index, 1);
         }
 	}
+
 	let getBlockApp = document.querySelector('.app');
 	
 	let menuMain = new MenuMain(getBlockApp, users);
 	menuMain.createMenu();
+    //let menuNotes = new NotesMenu(getBlockApp, users.notes);
+    //menuNotes.createMenu();
 })

@@ -153,7 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
         createMenu() {
             let container = document.createElement('div');
             container.classList.add('menu-notes');
-            this.blockInsert.append(container);
+            //this.blockInsert.append(container);
+            this.blockInsert.firstChild.after(container);
 
             let formWrapper = document.createElement('div');
             formWrapper.classList.add('form');

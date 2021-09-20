@@ -30,16 +30,17 @@ document.addEventListener('DOMContentLoaded', function() {
     //test notes end
 
 	class MenuMain {
-		constructor(blockInsert, arrElem, removeBlock) {
+		constructor(blockInsert, arrElem, removeBlock, container) {
             this.blockInsert = blockInsert;
             this.arrElem = arrElem;
             this.activeElement = null;
             this.ul = null;
             this.removeBlock = removeBlock;
+            this.container = container;
         };
         createMenu() {
         	let container = document.createElement('div');
-            container.classList.add('menu-main');
+            container.classList.add(this.container);
             this.blockInsert.append(container);
 
             let formWrapper = document.createElement('div');
@@ -70,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.ul.classList.add('content-list');
             container.append(this.ul);
             this.show();
+            this.deactivateElement();
         }
         //создание элемента
         createElem() {
@@ -124,66 +126,44 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.arrElem[index] === this.activeElement) this.activeElement = null;
             this.arrElem.splice(event.target.parentNode.dataset.index, 1);
             if (event.target.parentNode.firstChild.matches('.content-item-name-active')) {
-                if (document.querySelector('.menu-note')) document.querySelector('.menu-note').remove();
+                if (document.querySelector('.menu-note')) document.querySelector('.menu-note').style.display = 'none';
             }
         }
 
         display() {
             if ((!this.activeElement) && document.querySelector(this.removeBlock)) {
-                document.querySelector(this.removeBlock).remove();
+                document.querySelector(this.removeBlock).style.display = 'none';
             }
             let menuNotes;
             if (this.activeElement) {
                 if (document.querySelector(this.removeBlock)) {
                     document.querySelector(this.removeBlock).remove();
                 }
-                menuNotes = new MenuNotes(getBlockApp, this.activeElement.notes, '.menu-note');
+                menuNotes = new MenuNotes(getBlockApp, this.activeElement.notes, '.menu-note', 'menu-notes');
                 menuNotes.createMenu();
                 menuNotes.display();
             }
+        }
+        deactivateElement() {
+            let click = null;
+            document.addEventListener('click', (event) => {
+                click = event.target;
+                if (!click.matches(`.${this.container}`)) return;
+                this.activeElement = null;
+                this.show();
+                this.display();
+                if (document.querySelector('body .menu-note')) {
+                    document.querySelector('.menu-note').style.display = 'none';
+                }
+            })
         }
 	}
 
 
 
     class MenuNotes extends MenuMain {
-        constructor(blockInsert, arrElem, removeBlock) {
-            super(blockInsert, arrElem, removeBlock);
-        }
-        createMenu() {
-            let container = document.createElement('div');
-            container.classList.add('menu-notes');
-            //this.blockInsert.append(container);
-            this.blockInsert.firstChild.after(container);
-
-            let formWrapper = document.createElement('div');
-            formWrapper.classList.add('form');
-            container.append(formWrapper);
-
-            let input = document.createElement('input');
-            input.placeholder = 'Имя заметки';
-            input.classList.add('input', 'form-name');
-            formWrapper.append(input);
-
-            let buttonAdd = document.createElement('button');
-            buttonAdd.classList.add('button', 'form-add');
-            buttonAdd.innerHTML = 'add';
-            formWrapper.append(buttonAdd);
-            buttonAdd.addEventListener('click', () => {
-                if(input.value.trim() === '') {
-                    alert('Заполните поле имени.');
-                    return;
-                }
-                this.name = input.value;
-                this.createElem();
-                input.value = '';
-                this.show(this.arrElem); //отображение созданого элемента
-            });
-
-            this.ul = document.createElement('ul');
-            this.ul.classList.add('content-list');
-            container.append(this.ul);
-            this.show();
+        constructor(blockInsert, arrElem, removeBlock, container) {
+            super(blockInsert, arrElem, removeBlock, container);
         }
         createElem() {
             this.arrElem.push(new Note(this.name));
@@ -191,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         display() {
             if ((!this.activeElement) && document.querySelector(this.removeBlock)) {
-                document.querySelector(this.removeBlock).remove();
+                document.querySelector(this.removeBlock).style.display = 'none';
             }
             let menuNote;
             if (this.activeElement) {
@@ -200,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 menuNote = new MenuNote(getBlockApp, this.activeElement);
                 menuNote.createMenu();
-                //menuNote.display();
             }
         }
     }
@@ -235,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let getBlockApp = document.querySelector('.app');
-    let menuMain = new MenuMain(getBlockApp, users, '.menu-notes');
+    let menuMain = new MenuMain(getBlockApp, users, '.menu-notes', 'menu-main');
     menuMain.createMenu();
 
 })

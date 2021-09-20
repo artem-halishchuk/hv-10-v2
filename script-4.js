@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.append(formWrapper);
 
             let input = document.createElement('input');
+            input.placeholder = 'Имя пользователя';
             input.classList.add('input', 'form-name');
             formWrapper.append(input);
 
@@ -55,6 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonAdd.innerHTML = 'add';
             formWrapper.append(buttonAdd);
             buttonAdd.addEventListener('click', () => {
+                if(input.value.trim() === '') {
+                    alert('Заполните поле имени.');
+                    return;
+                }
                 this.name = input.value;
                 this.createElem();
                 input.value = '';
@@ -83,12 +88,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 buttonShow.innerHTML = e.name;
                 li.append(buttonShow);
                 li.addEventListener('click', (event) => {
-
-                    this.activeElem(event.target, this.ul);
-                    if (e === this.activeElement) {
-                        buttonShow.classList.add('content-item-name-active');
-                    }
-                    //this.display();
+                    if (event.target.matches('.content-item-name-active')) return;                 
+                    this.activeElem(event.target);
+                    if (e === this.activeElement) buttonShow.classList.add('content-item-name-active');
                 })
                 if (e === this.activeElement) buttonShow.classList.add('content-item-name-active');
 
@@ -96,10 +98,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 buttonDelete.classList.add('delete');
                 li.append(buttonDelete);
                 buttonDelete.addEventListener('click', (event) => {
+                    event.stopPropagation();                    
                     this.deleteElem(event);
-                    this.show(this.arrElem);
-                    //console.log(this.activeElement.notes);
-                    console.log(this.activeElement);
+                    this.show();
+                    if(!event.target.parentNode.firstChild.matches('.content-item-name-active')) return;
                     this.display();
                 })
                 li.dataset.index = i;
@@ -114,13 +116,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.firstChild.classList.remove('content-item-name-active');
                 if(e.dataset.index === index) e.firstChild.classList.add('content-item-name-active');
             });
+            this.show();
             this.display();
         }
         deleteElem(event) {
-            event.stopPropagation();
             let index = event.target.parentNode.dataset.index;
             if (this.arrElem[index] === this.activeElement) this.activeElement = null;
             this.arrElem.splice(event.target.parentNode.dataset.index, 1);
+            if (event.target.parentNode.firstChild.matches('.content-item-name-active')) {
+                if (document.querySelector('.menu-note')) document.querySelector('.menu-note').remove();
+            }
         }
 
         display() {
@@ -134,15 +139,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 menuNotes = new MenuNotes(getBlockApp, this.activeElement.notes, '.menu-note');
                 menuNotes.createMenu();
+                menuNotes.display();
             }
-
         }
 	}
-
-	let getBlockApp = document.querySelector('.app');
-	
-	let menuMain = new MenuMain(getBlockApp, users, '.menu-notes');
-	menuMain.createMenu();
 
 
 
@@ -161,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.append(formWrapper);
 
             let input = document.createElement('input');
+            input.placeholder = 'Имя заметки';
             input.classList.add('input', 'form-name');
             formWrapper.append(input);
 
@@ -169,6 +170,10 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonAdd.innerHTML = 'add';
             formWrapper.append(buttonAdd);
             buttonAdd.addEventListener('click', () => {
+                if(input.value.trim() === '') {
+                    alert('Заполните поле имени.');
+                    return;
+                }
                 this.name = input.value;
                 this.createElem();
                 input.value = '';
@@ -182,10 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         createElem() {
             this.arrElem.push(new Note(this.name));
-        }
+        }        
 
         display() {
-
             if ((!this.activeElement) && document.querySelector(this.removeBlock)) {
                 document.querySelector(this.removeBlock).remove();
             }
@@ -194,19 +198,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (document.querySelector(this.removeBlock)) {
                     document.querySelector(this.removeBlock).remove();
                 }
-                menuNote = new MenuNote(getBlockApp, this.activeElement, '.menu-notes');
+                menuNote = new MenuNote(getBlockApp, this.activeElement);
                 menuNote.createMenu();
+                //menuNote.display();
             }
         }
     }
 
-
-
     class MenuNote {
-        constructor(blockInsert, note, removeBlock) {
+        constructor(blockInsert, note) {
             this.blockInsert = blockInsert;
             this.note = note;
-            this.removeBlock = removeBlock;
         }
         createMenu() {
             let container = document.createElement('div');
@@ -219,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             input.value = this.note.name;
             input.oninput = () => {
                 this.note.name = input.value;
-                console.log(this.note.name);
+                document.querySelector('.menu-notes .content-item-name-active').textContent = input.value;
             }
 
             let textarea = document.createElement('textarea');
@@ -228,14 +230,12 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea.textContent = this.note.note;
             textarea.oninput = () => {
                 this.note.note = textarea.value;
-                console.log(this.note.note);
             }
         }
     }
 
-
-
-
-
+    let getBlockApp = document.querySelector('.app');
+    let menuMain = new MenuMain(getBlockApp, users, '.menu-notes');
+    menuMain.createMenu();
 
 })

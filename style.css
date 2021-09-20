@@ -2,16 +2,18 @@
 body {
     font-family: 'Helvetica';
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;*/
 }
 .app {
-    display:inline-flex;
+    display:flex;
     gap: 2px;
-    align-content: flex-start;
-    align-items: flex-start;
-    align-items: stretch;
-    margin-left: auto;
-    margin-right: auto;
+    /*align-content: flex-start;*/
+    /*align-items: flex-start;*/
+    /*align-items: stretch;*/
+    /*justify-content: start;*/
+    /*left: 0;*/
+    /*margin-left: 0;*/
+    /*margin-right: auto;*/
     /*border-radius: 5px;*/
 }
 .menu-main, .menu-notes, .menu-note {
@@ -35,7 +37,7 @@ body {
     height: 40px;
 }
 .form-name, .note-heading, .form-search, .note-name, .note-form {
-
+    text-align: center;
     box-shadow: 0 4px 4px 0 rgba(58, 58, 58, 0.5);
     border-radius: 16px;
     border: 2px solid transparent;
@@ -43,6 +45,9 @@ body {
     font-size: 20px;
     text-shadow: #818181 2px 1px 5px;
     width: 100%;
+}
+.note-form {
+    text-align: start;
 }
 .form-name:focus, .note-form:focus, .form-search:focus, .note-name:focus, note-form:focus {
     border: 2px solid rgb(171, 101, 9);

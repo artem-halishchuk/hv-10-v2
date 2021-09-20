@@ -2,19 +2,10 @@
 body {
     font-family: 'Helvetica';
     display: flex;
-    /*flex-direction: column;*/
 }
 .app {
     display:flex;
     gap: 2px;
-    /*align-content: flex-start;*/
-    /*align-items: flex-start;*/
-    /*align-items: stretch;*/
-    /*justify-content: start;*/
-    /*left: 0;*/
-    /*margin-left: 0;*/
-    /*margin-right: auto;*/
-    /*border-radius: 5px;*/
 }
 .menu-main, .menu-notes, .menu-note {
     display: flex;
@@ -55,9 +46,6 @@ body {
 .form-name:hover, .note-form:hover, .form-search:hover, .note-name:hover, note-form:hover {
     border: 2px solid rgb(17, 196, 236);
 }
-/*.form-name:active {*/
-/*    border: 2px solid rgb(201, 25, 25);*/
-/*}*/
 .form-add {
     box-shadow: 0 4px 4px 0 rgba(58, 58, 58, 0.5);
     text-transform: uppercase;
@@ -154,14 +142,4 @@ body {
     margin-top: 20px;
     padding: 10px 5px;
     width: auto;
-}
-
-.menu-main {
-    /*display: none;*/
-}
-.menu-notes {
-    /*display: none;*/
-}
-.menu-note {
-    /*display: none;*/
 }

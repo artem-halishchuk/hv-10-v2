@@ -47,6 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formWrapper.classList.add('form');
             container.append(formWrapper);
 
+            let massageDeactivate = document.createElement('p');
+            massageDeactivate.classList.add('massageDeactivate');
+            massageDeactivate.textContent = 'Клик по полю меню дективирует активный компонент';
+            container.append(massageDeactivate);
+
             let input = document.createElement('input');
             input.placeholder = 'Имя пользователя';
             input.classList.add('input', 'form-name');
